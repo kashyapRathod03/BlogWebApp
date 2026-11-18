@@ -5,12 +5,21 @@ const {searchHelper, paginateHelper} =require("../Helpers/query/queryHelpers")
 
 const addStory = asyncErrorWrapper(async  (req,res,next)=> {
 
-    const {title,content,category,excerpt} = req.body 
+    const {title,content,category,excerpt,status,labels,searchDescription,customSlug,publishedAt} = req.body 
 
-    var wordCount = content.trim().split(/\s+/).length ; 
+    var wordCount = content ? content.trim().split(/\s+/).length : 0 ; 
    
     let readtime = Math.max(1, Math.ceil(wordCount / 200)) ;
 
+    // Parse labels
+    let parsedLabels = [];
+    if (Array.isArray(labels)) {
+        parsedLabels = labels.map(l => String(l).trim()).filter(Boolean);
+    } else if (typeof labels === "string" && labels.trim() !== "") {
+        parsedLabels = labels.split(",").map(l => l.trim()).filter(Boolean);
+    }
+
+    const storyStatus = status === "draft" ? "draft" : "published";
 
     try {
         const newStory = await Story.create({
@@ -18,8 +27,13 @@ const addStory = asyncErrorWrapper(async  (req,res,next)=> {
             content,
             category: category || "Engineering Insights",
             excerpt: excerpt || "",
+            status: storyStatus,
+            labels: parsedLabels,
+            searchDescription: searchDescription || "",
+            customSlug: customSlug || "",
+            publishedAt: publishedAt || (storyStatus === "published" ? Date.now() : null),
             author :req.user._id ,
-            image : req.savedStoryImage,
+            image : req.savedStoryImage || "default.jpg",
             readtime
         })
 
@@ -42,11 +56,13 @@ const addStory = asyncErrorWrapper(async  (req,res,next)=> {
 
 const getAllStories = asyncErrorWrapper( async (req,res,next) =>{
 
-    let query = Story.find().populate("author", "username photo");
+    const baseFilter = { status: { $ne: "draft" } };
+
+    let query = Story.find(baseFilter).populate("author", "username photo");
 
     query =searchHelper("title",query,req)
 
-    const paginationResult =await paginateHelper(Story , query ,req)
+    const paginationResult =await paginateHelper(Story , query ,req, baseFilter)
 
     query = paginationResult.query  ;
 
@@ -69,6 +85,16 @@ const getAllStories = asyncErrorWrapper( async (req,res,next) =>{
 const getMyStories = asyncErrorWrapper(async (req, res, next) => {
     const baseFilter = { author: req.user._id };
 
+    if (req.query.status === "published") {
+        baseFilter.status = { $ne: "draft" };
+    } else if (req.query.status === "draft") {
+        baseFilter.status = "draft";
+    }
+
+    if (req.query.label && req.query.label !== "All") {
+        baseFilter.labels = req.query.label;
+    }
+
     let query = Story.find(baseFilter).populate("author", "username photo");
 
     query = searchHelper("title", query, req);
@@ -79,12 +105,24 @@ const getMyStories = asyncErrorWrapper(async (req, res, next) => {
     query = query.sort("-createdAt");
 
     const stories = await query;
+    const userLabels = await Story.distinct("labels", { author: req.user._id });
+
+    // Aggregate counts for tabs
+    const totalAll = await Story.countDocuments({ author: req.user._id });
+    const totalPublished = await Story.countDocuments({ author: req.user._id, status: { $ne: "draft" } });
+    const totalDrafts = await Story.countDocuments({ author: req.user._id, status: "draft" });
 
     return res.status(200).json({
         success: true,
         count: stories.length,
         total: paginationResult.total,
         data: stories,
+        userLabels: userLabels.filter(Boolean),
+        counts: {
+            all: totalAll,
+            published: totalPublished,
+            drafts: totalDrafts
+        },
         page: paginationResult.page,
         pages: paginationResult.pages
     });
@@ -95,12 +133,22 @@ const detailStory =asyncErrorWrapper(async(req,res,next)=>{
     const {slug}=req.params ;
     const {activeUser} =req.body 
 
-    const story = await Story.findOne({
-        slug: slug 
-    }).populate("author likes")
+    // Increment views count atomically
+    const story = await Story.findOneAndUpdate(
+        { slug: slug },
+        { $inc: { views: 1 } },
+        { new: true }
+    ).populate("author likes");
 
-    const storyLikeUserIds = story.likes.map(json => json.id)
-    const likeStatus = activeUser && activeUser._id ? storyLikeUserIds.includes(activeUser._id) : false
+    if (!story) {
+        return res.status(404).json({
+            success: false,
+            message: "Story not found"
+        });
+    }
+
+    const storyLikeUserIds = (story.likes || []).map(json => json._id ? json._id.toString() : (json.id || json))
+    const likeStatus = activeUser && activeUser._id ? storyLikeUserIds.includes(activeUser._id.toString()) : false
 
 
     return res.status(200).
@@ -162,46 +210,129 @@ const editStoryPage  =asyncErrorWrapper(async(req,res,next)=>{
 })
 
 
-const editStory  =asyncErrorWrapper(async(req,res,next)=>{
+const editStory = asyncErrorWrapper(async(req,res,next)=>{
     const {slug } = req.params ; 
-    const {title ,content ,image ,previousImage, category, excerpt } = req.body;
+    const {title ,content ,image ,previousImage, category, excerpt, status, labels, searchDescription, customSlug, publishedAt } = req.body;
 
-    const story = await Story.findOne({slug : slug })
+    const story = await Story.findOne({slug : slug });
 
-    story.title = title ;
-    story.content = content ;
+    if (!story) {
+        return res.status(404).json({
+            success: false,
+            message: "Story not found"
+        });
+    }
+
+    // IDOR check: author or admin
+    if (story.author.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        return res.status(403).json({
+            success: false,
+            message: "Unauthorized to edit this story"
+        });
+    }
+
+    if (title) story.title = title ;
+    if (content) story.content = content ;
     if (category) story.category = category ;
     if (typeof excerpt === "string") story.excerpt = excerpt ;
+    if (typeof searchDescription === "string") story.searchDescription = searchDescription ;
+    if (typeof customSlug === "string") story.customSlug = customSlug ;
+    if (status && ["published", "draft"].includes(status)) {
+        story.status = status;
+        if (status === "published" && !story.publishedAt) {
+            story.publishedAt = Date.now();
+        }
+    }
+    if (publishedAt) story.publishedAt = new Date(publishedAt);
+
+    if (labels !== undefined) {
+        if (Array.isArray(labels)) {
+            story.labels = labels.map(l => String(l).trim()).filter(Boolean);
+        } else if (typeof labels === "string") {
+            story.labels = labels.split(",").map(l => l.trim()).filter(Boolean);
+        }
+    }
+
     const wordCount = content ? content.trim().split(/\s+/).length : 0 ;
     story.readtime = Math.max(1, Math.ceil(wordCount / 200)) ;
-    story.image =   req.savedStoryImage ;
 
-    if( !req.savedStoryImage) {
-        // if the image is not sent
-        story.image = image
-    }
-    else {
-        // if the image sent
-        // old image locatıon delete
-       deleteImageFile(req,previousImage)
-
+    if(req.savedStoryImage) {
+        deleteImageFile(req, previousImage || story.image);
+        story.image = req.savedStoryImage;
+    } else if (image) {
+        story.image = image;
     }
 
     await story.save()  ;
 
-    return res.status(200).
-        json({
-            success:true,
-            data :story
-    })
+    return res.status(200).json({
+        success:true,
+        data :story
+    });
+});
 
-})
+const updateStoryStatus = asyncErrorWrapper(async(req, res, next) => {
+    const { slug } = req.params;
+    const { status } = req.body;
+
+    if (!["published", "draft"].includes(status)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid status value. Must be 'published' or 'draft'."
+        });
+    }
+
+    const story = await Story.findOne({ slug });
+
+    if (!story) {
+        return res.status(404).json({
+            success: false,
+            message: "Story not found"
+        });
+    }
+
+    // IDOR check: author or admin
+    if (story.author.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        return res.status(403).json({
+            success: false,
+            message: "Unauthorized to update this story's status"
+        });
+    }
+
+    story.status = status;
+    if (status === "published" && !story.publishedAt) {
+        story.publishedAt = Date.now();
+    }
+
+    await story.save();
+
+    return res.status(200).json({
+        success: true,
+        message: `Story status updated to ${status}`,
+        data: story
+    });
+});
 
 const deleteStory  =asyncErrorWrapper(async(req,res,next)=>{
 
     const {slug} = req.params  ;
 
-    const story = await Story.findOne({slug : slug })
+    const story = await Story.findOne({slug : slug });
+
+    if (!story) {
+        return res.status(404).json({
+            success: false,
+            message: "Story not found"
+        });
+    }
+
+    // IDOR check: author or admin
+    if (story.author.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        return res.status(403).json({
+            success: false,
+            message: "Unauthorized to delete this story"
+        });
+    }
 
     deleteImageFile(req, story.image);
 
@@ -228,5 +359,6 @@ module.exports ={
     likeStory,
     editStoryPage,
     editStory ,
+    updateStoryStatus,
     deleteStory
 }

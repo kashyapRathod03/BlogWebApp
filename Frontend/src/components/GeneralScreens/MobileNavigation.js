@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, Link } from "react-router-dom";
-import { FiArrowRight, FiLogOut, FiEdit3, FiBookmark, FiUser } from "react-icons/fi";
+import { FiArrowRight, FiLogOut, FiEdit3, FiBookmark, FiUser, FiLayers } from "react-icons/fi";
 import Button from "../UI/Button";
 
 const MobileNavigation = ({ isOpen, onClose, navLinks, activeUser, onLogout }) => {
@@ -44,6 +44,11 @@ const MobileNavigation = ({ isOpen, onClose, navLinks, activeUser, onLogout }) =
             <Link to="/addstory" className="to-mobile-drawer__link" onClick={onClose}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                 <FiEdit3 /> Write Article
+              </span>
+            </Link>
+            <Link to="/my-blogs" className="to-mobile-drawer__link" onClick={onClose}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                <FiLayers /> My Stories &amp; Blogs
               </span>
             </Link>
             <Link to="/readList" className="to-mobile-drawer__link" onClick={onClose}>

@@ -14,6 +14,7 @@ import {
   FiShare2,
   FiCheck,
   FiList,
+  FiEye,
 } from "react-icons/fi";
 import { BsBookmarkFill } from "react-icons/bs";
 import { AuthContext } from "../../Context/AuthContext";
@@ -275,7 +276,7 @@ const DetailStory = () => {
     <main className="to-article-page">
       <SEOHead
         title={story.title}
-        description={excerpt}
+        description={story.searchDescription || story.excerpt || excerpt}
         canonicalPath={`/blog/${story.slug}`}
         ogType="article"
         ogImage={story.image ? `/storyImages/${story.image}` : undefined}
@@ -297,6 +298,21 @@ const DetailStory = () => {
           <h1 className="to-article-title">{story.title}</h1>
 
           {story.excerpt && <p className="to-article-subtitle">{story.excerpt}</p>}
+
+          {Array.isArray(story.labels) && story.labels.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0 16px" }}>
+              {story.labels.map((lbl) => (
+                <Link
+                  key={lbl}
+                  to={`/blog?label=${encodeURIComponent(lbl)}`}
+                  className="to-sidebar-chip"
+                  style={{ textDecoration: "none" }}
+                >
+                  #{lbl}
+                </Link>
+              ))}
+            </div>
+          )}
 
           <div className="to-article-meta-bar">
             <div className="to-article-author">
@@ -321,7 +337,7 @@ const DetailStory = () => {
                 >
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                     <FiCalendar size={12} aria-hidden="true" />
-                    {formatArticleDate(story.createdAt)}
+                    {formatArticleDate(story.publishedAt || story.createdAt)}
                   </span>
                   {updatedDiffers && (
                     <span>Updated {formatArticleDate(story.updatedAt)}</span>
@@ -329,6 +345,10 @@ const DetailStory = () => {
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                     <FiClock size={12} aria-hidden="true" />
                     {getReadingTimeLabel(story)}
+                  </span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "var(--accent-primary)" }}>
+                    <FiEye size={12} aria-hidden="true" />
+                    {story.views || 0} views
                   </span>
                 </div>
               </div>

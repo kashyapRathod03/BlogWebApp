@@ -32,6 +32,7 @@ const CommentSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
+CommentSchema.index({ story: 1, createdAt: -1 });
 
 const Comment = mongoose.model("Comment", CommentSchema)
 

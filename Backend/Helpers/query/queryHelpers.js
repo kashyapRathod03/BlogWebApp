@@ -9,6 +9,10 @@ const searchHelper = (searchKey, query, req) => {
         filter.category = req.query.category;
     }
 
+    if (req.query.label && req.query.label !== "All") {
+        filter.labels = req.query.label;
+    }
+
     if (Object.keys(filter).length > 0) {
         query = query.where(filter);
     }
@@ -29,6 +33,9 @@ const paginateHelper = async (model, query, req, baseFilter = {}) => {
     }
     if (req.query.category && req.query.category !== "All") {
         filter.category = req.query.category;
+    }
+    if (req.query.label && req.query.label !== "All") {
+        filter.labels = req.query.label;
     }
 
     const total = await model.countDocuments(filter)

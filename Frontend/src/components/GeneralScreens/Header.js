@@ -152,6 +152,15 @@ const Header = () => {
                         </span>
                       </Link>
                       <Link
+                        to="/my-stories"
+                        className="to-user-dropdown__item"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                          <FiLayers size={15} /> My Stories &amp; Blogs
+                        </span>
+                      </Link>
+                      <Link
                         to="/readList"
                         className="to-user-dropdown__item"
                         onClick={() => setUserMenuOpen(false)}

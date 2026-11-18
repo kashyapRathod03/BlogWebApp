@@ -63,6 +63,7 @@ const App = () => (
 
           <Route element={<PrivateRoute />}>
             <Route path="my-stories" element={<MyStoriesPage />} />
+            <Route path="my-blogs" element={<MyStoriesPage />} />
             <Route path="addstory" element={<AddStory />} />
             <Route path="profile" element={<Profile />} />
             <Route path="edit_profile" element={<EditProfile />} />

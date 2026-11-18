@@ -25,6 +25,7 @@ const BlogPage = () => {
   const params = new URLSearchParams(location.search);
   const searchKey = params.get("search") || "";
   const categoryParam = params.get("category") || "All";
+  const labelParam = params.get("label") || "All";
   const pageParam = parseInt(params.get("page"), 10) || 1;
 
   const [searchInput, setSearchInput] = useState(searchKey);
@@ -44,6 +45,7 @@ const BlogPage = () => {
       const qs = new URLSearchParams();
       if (searchKey) qs.set("search", searchKey);
       if (categoryParam && categoryParam !== "All") qs.set("category", categoryParam);
+      if (labelParam && labelParam !== "All") qs.set("label", labelParam);
       qs.set("page", String(pageParam));
       qs.set("limit", "7");
 
@@ -60,12 +62,13 @@ const BlogPage = () => {
   useEffect(() => {
     fetchStories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchKey, categoryParam, pageParam]);
+  }, [searchKey, categoryParam, labelParam, pageParam]);
 
-  const updateQuery = (nextSearch, nextCategory, nextPage) => {
+  const updateQuery = (nextSearch, nextCategory, nextLabel, nextPage) => {
     const qs = new URLSearchParams();
     if (nextSearch) qs.set("search", nextSearch);
     if (nextCategory && nextCategory !== "All") qs.set("category", nextCategory);
+    if (nextLabel && nextLabel !== "All") qs.set("label", nextLabel);
     if (nextPage > 1) qs.set("page", String(nextPage));
     const queryStr = qs.toString();
     navigate(`/blog${queryStr ? `?${queryStr}` : ""}`);
@@ -73,7 +76,7 @@ const BlogPage = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    updateQuery(searchInput.trim(), categoryParam, 1);
+    updateQuery(searchInput.trim(), categoryParam, labelParam, 1);
   };
 
   const showFeatured = pageParam === 1 && !searchKey && stories.length > 0;
@@ -130,7 +133,7 @@ const BlogPage = () => {
       <section className="to-section" style={{ paddingTop: 40 }}>
         <div className="to-container">
           {/* Category Navigation */}
-          <div className="to-filter-bar" style={{ marginBottom: 36 }} role="tablist" aria-label="Blog Categories">
+          <div className="to-filter-bar" style={{ marginBottom: 24 }} role="tablist" aria-label="Blog Categories">
             {BLOG_CATEGORIES.map((category) => (
               <button
                 key={category}
@@ -138,12 +141,28 @@ const BlogPage = () => {
                 role="tab"
                 aria-selected={categoryParam === category}
                 className={`to-filter-pill ${categoryParam === category ? "to-filter-pill--active" : ""}`}
-                onClick={() => updateQuery(searchKey, category, 1)}
+                onClick={() => updateQuery(searchKey, category, labelParam, 1)}
               >
                 {category}
               </button>
             ))}
           </div>
+
+          {labelParam !== "All" && (
+            <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Filtering by label:</span>
+              <span className="to-sidebar-chip">
+                #{labelParam}
+                <button
+                  type="button"
+                  onClick={() => updateQuery(searchKey, categoryParam, "All", 1)}
+                  style={{ background: "transparent", border: "none", color: "inherit", cursor: "pointer", marginLeft: 4 }}
+                >
+                  ✕
+                </button>
+              </span>
+            </div>
+          )}
 
           {loading ? (
             <LoadingState message="Fetching articles from TechOrcas Insights..." />
