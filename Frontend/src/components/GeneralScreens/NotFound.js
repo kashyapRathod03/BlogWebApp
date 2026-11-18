@@ -1,25 +1,30 @@
 import React from "react";
-import "../../Css/NotFound.css"
-const NotFound = () => (
-  <>
-    <div className="notFound">
+import Button from "../UI/Button";
+import SEOHead from "../UI/SEOHead";
 
-      <div className='stars'></div>
-      <div className='stars2'></div>
-      <div className='stars3'></div>
-      <div className='title'>
-        <span className="text404">
-          404
-        </span>
-        <br />
-        <span>
-          PAGE NOT FOUND
-        </span>
+const NotFound = () => (
+  <main className="to-section">
+    <SEOHead title="Page Not Found" />
+    <div className="to-container" style={{ maxWidth: 640, textAlign: "center" }}>
+      <div className="to-card" style={{ padding: "56px 32px" }}>
+        <span className="to-eyebrow to-eyebrow--purple">Error 404</span>
+        <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.4rem)", marginBottom: 12 }}>
+          Page Not Found
+        </h1>
+        <p style={{ marginBottom: 28 }}>
+          The page or article you requested could not be found or may have moved.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+          <Button to="/" variant="primary">
+            Back to Home
+          </Button>
+          <Button to="/blog" variant="secondary">
+            Explore Blog
+          </Button>
+        </div>
       </div>
     </div>
-
-  </>
-
+  </main>
 );
 
 export default NotFound;

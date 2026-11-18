@@ -1,96 +1,111 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import "../../Css/ResetPasswordScreen.css"
+import Logo from "../UI/Logo";
+import Button from "../UI/Button";
+import SEOHead from "../UI/SEOHead";
+import "../../Css/AuthAndForms.css";
 
 const ResetPasswordScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const search = useLocation().search;
-  const token = search.split("=")[1]
+  const token = new URLSearchParams(search).get("resetPasswordToken") || search.split("=")[1] || "";
 
   const resetPasswordHandler = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (password !== confirmPassword) {
       setPassword("");
       setConfirmPassword("");
-      setTimeout(() => {
-        setError("");
-      }, 5000);
-      return setError("Passwords don't match");
+      return setError("Passwords do not match.");
     }
 
+    setLoading(true);
     try {
       const { data } = await axios.put(
         `/auth/resetpassword?resetPasswordToken=${token}`,
-        {
-          password,
-        }
+        { password }
       );
-
-      setSuccess(data.message);
-
-    } catch (error) {
-
-      setError(error.response.data.error);
-
-      setTimeout(() => {
-        setError("");
-      }, 5000);
+      setSuccess(data.message || "Password reset successfully.");
+    } catch (err) {
+      setError(err.response?.data?.error || "Unable to reset password.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="Inclusive-resetPassword-page">
-      <form
-        onSubmit={resetPasswordHandler}
-        className="resetpassword-form"
-      >
-
-        <h3 >Reset Password</h3>
-
-        {error && <div className="error_msg">{error} </div>}
-
-        {success && (
-          <div className="success_msg">
-            {success} <Link to="/login">Login</Link>
+    <div className="to-auth-page">
+      <SEOHead title="Reset Password" canonicalPath="/resetpassword" />
+      <div className="to-auth-shell to-auth-shell--single">
+        <div className="to-auth-panel">
+          <div style={{ marginBottom: 24 }}>
+            <Link to="/">
+              <Logo />
+            </Link>
           </div>
-        )}
 
-        <div className="input-wrapper">
-          <input
-            type="password"
-            required
-            id="password"
-            placeholder="Enter new password"
-            autoComplete="true"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <label htmlFor="confirmpassword"> Password</label>
+          <h1 style={{ fontSize: "1.65rem", marginBottom: 8 }}>Reset Password</h1>
+          <p style={{ fontSize: "0.94rem", marginBottom: 22 }}>
+            Choose a strong new password for your account.
+          </p>
+
+          {error && <div className="to-alert to-alert--error">{error}</div>}
+          {success && (
+            <div className="to-alert to-alert--success">
+              <span>{success}</span>
+              <Link to="/login" style={{ textDecoration: "underline" }}>
+                Sign In
+              </Link>
+            </div>
+          )}
+
+          <form className="to-auth-form" onSubmit={resetPasswordHandler}>
+            <div className="to-field">
+              <label className="to-label" htmlFor="password">
+                New Password
+              </label>
+              <input
+                type="password"
+                required
+                id="password"
+                className="to-input"
+                placeholder="Enter new password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <div className="to-field">
+              <label className="to-label" htmlFor="confirmpassword">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                required
+                id="confirmpassword"
+                className="to-input"
+                placeholder="Confirm new password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+
+            <Button type="submit" variant="primary" size="lg" disabled={loading}>
+              {loading ? "Updating..." : "Reset Password"}
+            </Button>
+          </form>
         </div>
-
-        <div className="input-wrapper">
-
-          <input
-            type="password"
-            required
-            id="confirmpassword"
-            placeholder="Confirm new password"
-            autoComplete="true"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <label htmlFor="confirmpassword">Confirm New Password</label>
-        </div>
-        <button className="resetPass-btn">
-          Reset Password
-        </button>
-
-      </form>
+      </div>
     </div>
   );
 };

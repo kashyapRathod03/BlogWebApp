@@ -10,6 +10,8 @@ node_modules/
 
 # production
 /build
+build/
+Frontend/build/
 Config/
 # misc
 .DS_Store

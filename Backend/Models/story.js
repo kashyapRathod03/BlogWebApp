@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose")
 const Comment = require("./comment")
 const slugify = require("slugify")
@@ -21,6 +20,14 @@ const StorySchema = new mongoose.Schema({
         type: String,
         required: [true, "Please a provide a content "],
         minlength: [10, "Please provide a content least 10 characters "],
+    },
+    category: {
+        type: String,
+        default: "Engineering Insights"
+    },
+    excerpt: {
+        type: String,
+        default: ""
     },
     image: {
         type: String,
@@ -53,7 +60,7 @@ const StorySchema = new mongoose.Schema({
 StorySchema.pre("save",  function (next) {
 
     if (!this.isModified("title")) {
-        next();
+        return next();
     }
 
 

@@ -1,39 +1,66 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 export const AuthContext = React.createContext();
 
-const AuthContextProvider = props => {
+const buildConfig = () => ({
+  headers: {
+    "Content-Type": "application/json",
+    authorization: `Bearer ${localStorage.getItem("authToken")}`,
+  },
+});
 
-  const [activeUser, setActiveUser] = useState({})
-  const [config, setConfig] = useState({
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${localStorage.getItem("authToken")}`,
-    },
-  })
+const AuthContextProvider = (props) => {
+  const [activeUser, setActiveUser] = useState({});
+  const [config, setConfig] = useState(buildConfig);
+  const [authLoading, setAuthLoading] = useState(true);
 
+  const refreshAuth = useCallback(async () => {
+    const token = localStorage.getItem("authToken");
+    const nextConfig = buildConfig();
+    setConfig(nextConfig);
+
+    if (!token) {
+      setActiveUser({});
+      setAuthLoading(false);
+      return null;
+    }
+
+    try {
+      const { data } = await axios.get("/auth/private", nextConfig);
+      setActiveUser(data.user || {});
+      setAuthLoading(false);
+      return data.user;
+    } catch (error) {
+      localStorage.removeItem("authToken");
+      setActiveUser({});
+      setAuthLoading(false);
+      return null;
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("authToken");
+    setActiveUser({});
+    setConfig(buildConfig());
+  }, []);
 
   useEffect(() => {
-
-    const controlAuth = async () => {
-      try {
-        const { data } = await axios.get("/auth/private", config);
-        setActiveUser(data.user)
-      }
-      catch (error) {
-
-        localStorage.removeItem("authToken");
-
-        setActiveUser({})
-      }
-    };
-    controlAuth()
-
-  }, [])
+    refreshAuth();
+  }, [refreshAuth]);
 
   return (
-    <AuthContext.Provider value={{ activeUser, setActiveUser, config, setConfig }}>
+    <AuthContext.Provider
+      value={{
+        activeUser,
+        setActiveUser,
+        config,
+        setConfig,
+        authLoading,
+        refreshAuth,
+        logout,
+      }}
+    >
       {props.children}
     </AuthContext.Provider>
   );

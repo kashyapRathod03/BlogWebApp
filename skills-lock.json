@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "skills": {
+    "mongodb-atlas-stream-processing": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-atlas-stream-processing/SKILL.md",
+      "computedHash": "87f3d8e9506a45533755c649deca282f5b148eeae4a69169cf85d06f78325f78"
+    },
+    "mongodb-connection": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-connection/SKILL.md",
+      "computedHash": "5a80b8b7c03e67e67a9dce081fd23a842714408c8f897aa206032ccf433bde74"
+    },
+    "mongodb-mcp-setup": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-mcp-setup/SKILL.md",
+      "computedHash": "4729747aef98113ed61d2817dc3e7f187f353cee187ecebecf6558ad88084ede"
+    },
+    "mongodb-natural-language-querying": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-natural-language-querying/SKILL.md",
+      "computedHash": "a48cb9f75e5d9e778c0c2f03eb93e13d56e9bf874adbe1088f881b5255251f6d"
+    },
+    "mongodb-qe-size-estimation": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-qe-size-estimation/SKILL.md",
+      "computedHash": "4787f40b22c9a8839ca74ebe64c14b448bfa5be7f9b508508d4859342024905d"
+    },
+    "mongodb-query-optimizer": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-query-optimizer/SKILL.md",
+      "computedHash": "f9719fb044e50716cc1cbf4df7e7ff3090cd336959ba8136480bea728614e386"
+    },
+    "mongodb-schema-design": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-schema-design/SKILL.md",
+      "computedHash": "2931d495b06ed4b2bda4fcea04566104319f3b9e61f79cde570195461127412a"
+    },
+    "mongodb-search-and-ai": {
+      "source": "mongodb/agent-skills",
+      "commit": "c12b25ccd009da8689976db63324e749e5ca2ad2",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-search-and-ai/SKILL.md",
+      "computedHash": "14301fd4cded9846f517bc08540768f81f91ce1e1d48f70731ccdb2a57bc98da"
+    }
+  }
+}

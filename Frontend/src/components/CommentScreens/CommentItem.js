@@ -1,137 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { FaStar } from 'react-icons/fa';
-import {
-    MdOutlineWavingHand,
-    MdWavingHand
-} from 'react-icons/md'
-import { BsThreeDots } from 'react-icons/bs'
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { FaStar } from "react-icons/fa";
+import { MdOutlineWavingHand, MdWavingHand } from "react-icons/md";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { formatArticleDate } from "../../utils/articleUtils";
 
 const CommentItem = ({ comment, activeUser }) => {
-    const navigate = useNavigate()
-    const [likeCount, setLikeCount] = useState(comment.likeCount)
-    const [likeStatus, setLikeStatus] = useState(false)
+  const navigate = useNavigate();
+  const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
+  const [likeStatus, setLikeStatus] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
+    if (!activeUser?._id) return;
+    let active = true;
 
-        const getCommentLikeStatus = async () => {
+    const getCommentLikeStatus = async () => {
+      try {
+        const { data } = await axios.post(
+          `/comment/${comment._id}/getCommentLikeStatus`,
+          { activeUser },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+        if (active) setLikeStatus(Boolean(data.likeStatus));
+      } catch (error) {
+        if (active) setLikeStatus(false);
+      }
+    };
 
-            const comment_id = comment._id
-            try {
-                const { data } = await axios.post(`/comment/${comment_id}/getCommentLikeStatus`, { activeUser }, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                    },
-                })
-                setLikeStatus(data.likeStatus)
-            }
-            catch (error) {
+    getCommentLikeStatus();
+    return () => {
+      active = false;
+    };
+  }, [comment._id, activeUser]);
 
-                localStorage.removeItem("authToken")
-                navigate("/")
-            }
-        }
-
-        getCommentLikeStatus()
-
-    }, [])
-    const editDate = (createdAt) => {
-        const d = new Date(createdAt);
-        var datestring = d.toLocaleString('eng', { month: 'long' }).substring(0, 3) + " " + d.getDate()
-        return datestring
+  const handleCommentLike = async () => {
+    if (!activeUser?._id) {
+      return navigate("/login");
     }
 
-
-    const handleCommentLike = async () => {
-        console.log("like comment ıtem ın  basıldı ")
-
-        const comment_id = comment._id
-
-        try {
-            const { data } = await axios.post(`/comment/${comment_id}/like`, { activeUser }, {
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                },
-            })
-
-            setLikeCount(data.data.likeCount)
-            setLikeStatus(data.likeStatus)
-
+    try {
+      const { data } = await axios.post(
+        `/comment/${comment._id}/like`,
+        { activeUser },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
-        catch (error) {
-            localStorage.removeItem("authToken")
-            navigate("/")
-        }
+      );
+
+      setLikeCount(data.data.likeCount);
+      setLikeStatus(Boolean(data.likeStatus));
+    } catch (error) {
+      navigate("/login");
     }
+  };
 
-    return (
-
-        <div className='comment-item'>
-            <div className="comment-top-block">
-
-                <section>
-                    <img src={`/userPhotos/${comment.author.photo}`} alt={comment.author.username} width="35" />
-
-                    <div>
-                        <span className='comment-author-username' >{comment.author.username}</span>
-                        <span className='comment-createdAt'>{editDate(comment.createdAt)}</span>
-                    </div>
-                </section>
-
-                <section>
-                    <BsThreeDots />
-                </section>
+  return (
+    <article className="to-comment-card">
+      <div className="to-comment-card__top">
+        <div className="to-comment-card__author">
+          <img
+            src={`/userPhotos/${comment.author?.photo || "user.png"}`}
+            alt={comment.author?.username || "Reader"}
+          />
+          <div>
+            <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+              {comment.author?.username || "Member"}
             </div>
-
-
-            <div className="comment-content">
-
-                <span dangerouslySetInnerHTML={{ __html: comment.content }}></span>
-
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+              {formatArticleDate(comment.createdAt)}
             </div>
-
-
-            <div className="comment-bottom-block">
-
-                <div className="commentLike-wrapper">
-
-
-                    <i className='biLike' onClick={() => handleCommentLike()}>
-                        {
-                            likeStatus ? <MdWavingHand /> : <MdOutlineWavingHand />
-
-                        }
-                    </i>
-                    <span className='commentlikeCount'>
-                        {likeCount}
-
-                    </span>
-                </div>
-
-                <div className="comment-star">
-                    {
-                        [...Array(5)].map((_, index) => {
-                            return (
-                                <FaStar
-                                    key={index}
-                                    className="star"
-                                    size={15}
-                                    color={comment.star > index ? "#0205b1" : "grey"}
-                                />
-                            )
-                        })
-                    }
-
-                </div>
-
-            </div>
-
+          </div>
         </div>
+      </div>
 
-    )
-}
+      <div
+        className="to-comment-card__body"
+        dangerouslySetInnerHTML={{ __html: comment.content }}
+      />
+
+      <div className="to-comment-card__footer">
+        <button
+          type="button"
+          className="to-comment-like-btn"
+          onClick={handleCommentLike}
+          aria-label="Like response"
+        >
+          {likeStatus ? <MdWavingHand color="#00C9C8" /> : <MdOutlineWavingHand />}
+          <span>{likeCount}</span>
+        </button>
+
+        <div style={{ display: "inline-flex", gap: 3 }}>
+          {[...Array(5)].map((_, index) => (
+            <FaStar
+              key={index}
+              size={13}
+              color={comment.star > index ? "#00C9C8" : "rgba(255,255,255,0.16)"}
+            />
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+};
 
 export default CommentItem;

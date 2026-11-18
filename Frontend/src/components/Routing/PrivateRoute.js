@@ -1,51 +1,58 @@
-import { useEffect,useState,useContext } from 'react';
-import {Outlet, useNavigate} from 'react-router-dom'
-import Home from '../GeneralScreens/Home';
-import axios from 'axios';
+import { useEffect, useState, useContext } from "react";
+import { Outlet, Navigate } from "react-router-dom";
+import axios from "axios";
 import { AuthContext } from "../../Context/AuthContext";
+import LoadingState from "../UI/LoadingState";
 
-const PrivateRoute =( ) => {
-    const bool =localStorage.getItem("authToken") ? true :false
-    const [auth ,setAuth] =useState(bool)
-    const [error ,setError] =useState("")
-    const navigate = useNavigate()
-    const {setActiveUser,setConfig } = useContext(AuthContext)
+const PrivateRoute = () => {
+  const token = localStorage.getItem("authToken");
+  const [status, setStatus] = useState(token ? "checking" : "unauthenticated");
+  const { setActiveUser, setConfig } = useContext(AuthContext);
 
-    useEffect(() => {
+  useEffect(() => {
+    let active = true;
+    if (!token) {
+      setStatus("unauthenticated");
+      return;
+    }
 
-       const controlAuth = async () => {
-        const config = {
-            headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-        };
-        try {
-            const { data } = await axios.get("/auth/private", config); 
+    const verify = async () => {
+      const nextConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+      };
 
-            setAuth(true)
-            setActiveUser(data.user)
-            setConfig(config)
+      try {
+        const { data } = await axios.get("/auth/private", nextConfig);
+        if (!active) return;
+        setActiveUser(data.user || {});
+        setConfig(nextConfig);
+        setStatus("authenticated");
+      } catch (error) {
+        if (!active) return;
+        localStorage.removeItem("authToken");
+        setActiveUser({});
+        setStatus("unauthenticated");
+      }
+    };
 
-        } 
-        catch (error) {
+    verify();
+    return () => {
+      active = false;
+    };
+  }, [token, setActiveUser, setConfig]);
 
-            localStorage.removeItem("authToken");
+  if (status === "checking") {
+    return (
+      <div className="to-container" style={{ padding: "80px 24px" }}>
+        <LoadingState message="Verifying your session..." />
+      </div>
+    );
+  }
 
-            setAuth(false)
-            setActiveUser({})
-
-            navigate("/")
-
-            setError("You are not authorized please login"); 
-        }
-        };
-
-        controlAuth()
-    }, [bool,navigate])
-
-
-    return (auth ? <Outlet />  : <Home error={error} />)
-}
+  return status === "authenticated" ? <Outlet /> : <Navigate to="/login" replace />;
+};
 
 export default PrivateRoute;

@@ -1,61 +1,46 @@
-import React, { useState, useEffect, useRef } from 'react';
-import StoryComments from './StoryComments';
-import axios from 'axios';
-import AddComment from './AddComment';
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import StoryComments from "./StoryComments";
+import AddComment from "./AddComment";
 
 const CommentSidebar = ({ slug, sidebarShowStatus, setSidebarShowStatus, activeUser }) => {
+  const [count, setCount] = useState(0);
+  const [commentlist, setCommentList] = useState([]);
 
-  const [count, setCount] = useState(0)
-  const [commentlist, setCommentList] = useState([])
-
-  const sidebarRef = useRef(null);
-
-  useEffect(() => {
-    getStoryComments()
-  }, [setCommentList])
-
-
-  const getStoryComments = async () => {
+  const getStoryComments = useCallback(async () => {
     try {
-      const { data } = await axios.get(`/comment/${slug}/getAllComment`)
-      setCommentList(data.data)
-      setCount(data.count)
+      const { data } = await axios.get(`/comment/${slug}/getAllComment`);
+      setCommentList(data.data || []);
+      setCount(data.count || 0);
+    } catch (error) {
+      console.error(error);
     }
-    catch (error) {
-      console.log(error.response.data.error);
-    }
-  }
+  }, [slug]);
 
   useEffect(() => {
-    const checkIfClickedOutside = e => {
-
-      if (sidebarShowStatus && sidebarRef.current && !sidebarRef.current.contains(e.target)) {
-        setSidebarShowStatus(false)
-      }
-    }
-    document.addEventListener("mousedown", checkIfClickedOutside)
-    return () => {
-      // Cleanup the event listener
-      document.removeEventListener("mousedown", checkIfClickedOutside)
-    }
-  }, [sidebarShowStatus])
-
-
+    getStoryComments();
+  }, [getStoryComments]);
 
   return (
+    <aside
+      className={
+        sidebarShowStatus
+          ? "Inclusive-comment-sidebar visible"
+          : "Inclusive-comment-sidebar hidden"
+      }
+      aria-label="Article Responses"
+    >
+      <AddComment
+        setSidebarShowStatus={setSidebarShowStatus}
+        slug={slug}
+        getStoryComments={getStoryComments}
+        activeUser={activeUser}
+        count={count}
+      />
 
-    <div ref={sidebarRef} className={sidebarShowStatus ? "Inclusive-comment-sidebar visible" : "Inclusive-comment-sidebar hidden "}  >
-
-      <div className='sidebar-wrapper'>
-
-        <AddComment setSidebarShowStatus={setSidebarShowStatus} slug={slug} getStoryComments={getStoryComments} activeUser={activeUser} count={count} />
-
-        <StoryComments commentlist={commentlist} activeUser={activeUser} count={count} />
-      </div>
-
-    </div>
-
-  )
-}
+      <StoryComments commentlist={commentlist} activeUser={activeUser} count={count} />
+    </aside>
+  );
+};
 
 export default CommentSidebar;

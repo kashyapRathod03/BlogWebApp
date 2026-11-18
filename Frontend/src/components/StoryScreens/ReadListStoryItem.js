@@ -1,84 +1,63 @@
-import React from 'react'
-import { AiFillStar } from 'react-icons/ai'
-import { BsThreeDots, BsBookmarkFill } from 'react-icons/bs'
+import React from "react";
+import { Link } from "react-router-dom";
+import { FiArrowRight, FiClock } from "react-icons/fi";
+import {
+  formatArticleDate,
+  getArticleExcerpt,
+  getReadingTimeLabel,
+} from "../../utils/articleUtils";
 
-const ReadListStoryItem = ({ story, editDate }) => {
+const ReadListStoryItem = ({ story }) => {
+  if (!story) return null;
 
-    const truncateContent = (content) => {
-        const trimmedString = content.substr(0, 130);
-        return trimmedString
-    }
-
-    return (
-
-        <div className="readList-story-item">
-
-            <section>
-                <div className="story-top-block">
-                    <div className="readList-story-author">
-
-                        {story.author.username}
-
-                    </div>
-                    <span>-</span>
-                    <div className="readList-story-createdAt">
-                        {editDate(story.createdAt)}
-                    </div>
-                    <i>
-                        <AiFillStar />
-                    </i>
-
-                </div>
-
-                <div className="story-med-block">
-                    <div className="readList-story-title">
-                        <a href={`story/${story.slug}`}>
-                            {story.title}
-                        </a>
-                    </div>
-                    <div className="readList-story-content">
-
-                        <span dangerouslySetInnerHTML={{ __html: truncateContent(story.content) + "..." }}></span>
-
-                    </div>
-
-                </div>
-
-                <div className="story-bottom-block">
-                    <a href={`story/${story.slug}`}>
-                        <span>
-                            Read More
-                        </span>
-                        <span>
-                            -
-                        </span>
-                        <span>
-                            {story.readtime} min read
-                        </span>
-                    </a>
-
-                    <div>
-
-                        <i>
-                            <BsBookmarkFill />
-                        </i>
-                        <i>
-                            < BsThreeDots />
-                        </i>
-
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div className="story-Image-Wrap">
-                    <img src={`/storyImages/${story.image}`} alt={story.title} width="180px" />
-                </div>
-
-            </section>
-
+  return (
+    <article className="to-card to-card--interactive to-readlist-item">
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 10,
+            alignItems: "center",
+            fontSize: "0.82rem",
+            color: "var(--text-muted)",
+            marginBottom: 8,
+          }}
+        >
+          <span className="to-badge to-badge--purple">
+            {story.category || "Engineering Insights"}
+          </span>
+          {story.author?.username && <span>{story.author.username}</span>}
+          <span>·</span>
+          <span>{formatArticleDate(story.createdAt)}</span>
+          <span>·</span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <FiClock size={12} /> {getReadingTimeLabel(story)}
+          </span>
         </div>
-    )
-}
 
-export default ReadListStoryItem
+        <h3 style={{ fontSize: "1.22rem", marginBottom: 8 }}>
+          <Link to={`/blog/${story.slug}`}>{story.title}</Link>
+        </h3>
+
+        <p style={{ fontSize: "0.93rem", marginBottom: 14 }}>{getArticleExcerpt(story, 140)}</p>
+
+        <Link to={`/blog/${story.slug}`} className="to-service-card__link">
+          <span>Read Article</span>
+          <FiArrowRight size={14} />
+        </Link>
+      </div>
+
+      <div>
+        <Link to={`/blog/${story.slug}`}>
+          <img
+            src={`/storyImages/${story.image || "default.jpg"}`}
+            alt={story.title}
+          />
+        </Link>
+      </div>
+    </article>
+  );
+};
+
+export default ReadListStoryItem;
