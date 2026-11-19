@@ -21,7 +21,7 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import { BLOG_CATEGORIES } from "../../data/siteData";
-import { formatArticleDate, getReadingTimeLabel } from "../../utils/articleUtils";
+import { formatArticleDate, getReadingTimeLabel, getImageUrl } from "../../utils/articleUtils";
 import SEOHead from "../UI/SEOHead";
 import "../../Css/BloggerEditor.css";
 
@@ -52,7 +52,7 @@ const BloggerEditor = ({
   );
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(
-    initialData.image ? `/storyImages/${initialData.image}` : ""
+    initialData.image ? getImageUrl(initialData.image) : ""
   );
 
   // Editor mode & UI states

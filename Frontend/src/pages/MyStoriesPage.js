@@ -15,7 +15,7 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { AuthContext } from "../Context/AuthContext";
-import { formatArticleDate } from "../utils/articleUtils";
+import { formatArticleDate, getImageUrl } from "../utils/articleUtils";
 import PageHero from "../components/UI/PageHero";
 import LoadingState from "../components/UI/LoadingState";
 import EmptyState from "../components/UI/EmptyState";
@@ -317,7 +317,7 @@ const MyStoriesPage = () => {
                             }}
                           >
                             <img
-                              src={`/storyImages/${story.image || "default.jpg"}`}
+                              src={getImageUrl(story.image)}
                               alt={story.title}
                               style={{ width: "100%", height: "100%", objectFit: "cover" }}
                               onError={(e) => {

@@ -1,8 +1,19 @@
+import React, { useEffect } from "react";
+import axios from "axios";
 import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import PrivateRoute from "./components/Routing/PrivateRoute";
 import Header from "./components/GeneralScreens/Header";
 import Footer from "./components/GeneralScreens/Footer";
 import ScrollToTop from "./components/UI/ScrollToTop";
+
+// Centralized Smart API Base URL (Hostinger unified vs. Render backup)
+export const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? "" : "http://localhost:5000");
+
+if (API_URL) {
+  axios.defaults.baseURL = API_URL;
+}
 
 import HomePage from "./pages/HomePage";
 import ServicesPage from "./pages/ServicesPage";
@@ -38,10 +49,26 @@ const LayoutsWithHeader = () => (
   </>
 );
 
-const App = () => (
-  <Router>
-    <ScrollToTop />
-    <div className="App">
+const App = () => {
+  // Conditional wake-up & keep-alive ping (only active if external backup VITE_API_URL is configured)
+  useEffect(() => {
+    const externalApiUrl = import.meta.env.VITE_API_URL;
+    if (!externalApiUrl) return;
+
+    const pingHealth = () => {
+      fetch(`${externalApiUrl}/api/health`, { cache: "no-store" }).catch(() => {});
+    };
+
+    pingHealth();
+    const interval = setInterval(pingHealth, 600000); // 10 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Router>
+      <ScrollToTop />
+      <div className="App">
       <Routes>
         <Route path="/" element={<LayoutsWithHeader />}>
           {/* Agency & Publication Routes */}
@@ -87,6 +114,7 @@ const App = () => (
       </Routes>
     </div>
   </Router>
-);
+  );
+};
 
 export default App;

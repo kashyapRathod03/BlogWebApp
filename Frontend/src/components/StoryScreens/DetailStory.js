@@ -23,6 +23,8 @@ import {
   getArticleExcerpt,
   getReadingTimeLabel,
   parseContentWithToc,
+  getImageUrl,
+  getUserPhotoUrl,
 } from "../../utils/articleUtils";
 import Breadcrumb from "../UI/Breadcrumb";
 import BlogCard from "../UI/BlogCard";
@@ -253,7 +255,7 @@ const DetailStory = () => {
         "@type": "Article",
         headline: story.title,
         description: excerpt,
-        image: story.image ? `${window.location.origin}/storyImages/${story.image}` : undefined,
+        image: story.image ? (story.image.startsWith("http") ? story.image : `${window.location.origin}/storyImages/${story.image}`) : undefined,
         datePublished: story.createdAt,
         dateModified: story.updatedAt || story.createdAt,
         author: story.author?.username
@@ -279,7 +281,7 @@ const DetailStory = () => {
         description={story.searchDescription || story.excerpt || excerpt}
         canonicalPath={`/blog/${story.slug}`}
         ogType="article"
-        ogImage={story.image ? `/storyImages/${story.image}` : undefined}
+        ogImage={story.image ? getImageUrl(story.image) : undefined}
         jsonLd={jsonLd}
       />
 
@@ -318,8 +320,8 @@ const DetailStory = () => {
             <div className="to-article-author">
               {story.author && (
                 <img
-                  src={`/userPhotos/${story.author.photo || "user.png"}`}
-                  alt={story.author.username}
+                  src={getUserPhotoUrl(story.author?.photo)}
+                  alt={story.author?.username}
                 />
               )}
               <div>
@@ -438,7 +440,7 @@ const DetailStory = () => {
             {story.image && (
               <img
                 className="to-article-hero-img"
-                src={`/storyImages/${story.image}`}
+                src={getImageUrl(story.image)}
                 alt={story.title}
               />
             )}

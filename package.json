@@ -1,0 +1,25 @@
+{
+  "name": "blogwebapp-unified",
+  "version": "1.0.0",
+  "description": "TechOrcas Publishing Platform - Unified Hostinger & Split Render/Static deployment",
+  "main": "server.js",
+  "scripts": {
+    "build": "cd Frontend && npm install && npm run build",
+    "start": "node server.js",
+    "server": "cd Backend && npm start",
+    "client": "cd Frontend && npm run dev",
+    "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "keywords": [
+    "techorcas",
+    "blog",
+    "nodejs",
+    "react",
+    "express",
+    "mongodb",
+    "vite"
+  ],
+  "author": "TechOrcas",
+  "license": "ISC"
+}

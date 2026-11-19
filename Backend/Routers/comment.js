@@ -1,4 +1,5 @@
 const express = require("express")
+const { cachePublic, cachePrivate } = require("../Middlewares/cache/cacheControl");
 
 const { getAccessToRoute } = require("../Middlewares/Authorization/auth");
 
@@ -9,13 +10,13 @@ const { checkStoryExist } = require("../Middlewares/database/databaseErrorhandle
 const router = express.Router() ;
 
 
-router.post("/:slug/addComment",[getAccessToRoute,checkStoryExist] ,addNewCommentToStory)
+router.post("/:slug/addComment",[getAccessToRoute, cachePrivate, checkStoryExist] ,addNewCommentToStory)
 
-router.get("/:slug/getAllComment",getAllCommentByStory)
+router.get("/:slug/getAllComment", cachePublic(60), getAllCommentByStory)
 
-router.post("/:comment_id/like",commentLike)
+router.post("/:comment_id/like", [cachePrivate], commentLike)
 
-router.post("/:comment_id/getCommentLikeStatus",getCommentLikeStatus)
+router.post("/:comment_id/getCommentLikeStatus", [cachePrivate], getCommentLikeStatus)
 
 
 module.exports = router

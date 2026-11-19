@@ -12,13 +12,13 @@ node_modules/
 /build
 build/
 Frontend/build/
+dist/
+Frontend/dist/
 Config/
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env
+.env*.local
+*.env
+
 
 npm-debug.log*
 yarn-debug.log*

@@ -15,6 +15,7 @@ import { HOME_SERVICES_BENTO, FEATURED_SOLUTIONS_SUMMARY } from "../../data/site
 import Logo from "../UI/Logo";
 import Button from "../UI/Button";
 import MobileNavigation from "./MobileNavigation";
+import { getUserPhotoUrl } from "../../utils/articleUtils";
 import "../../Css/Header.css";
 
 const NAV_LINKS = [
@@ -133,7 +134,7 @@ const Header = () => {
                     aria-expanded={userMenuOpen}
                   >
                     <img
-                      src={`/userPhotos/${activeUser.photo || "user.png"}`}
+                      src={getUserPhotoUrl(activeUser.photo)}
                       alt={activeUser.username}
                     />
                     <span>{activeUser.username}</span>

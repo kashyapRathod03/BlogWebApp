@@ -1,4 +1,5 @@
 const express = require("express")
+const { cachePrivate } = require("../Middlewares/cache/cacheControl");
 
 const imageUpload = require("../Helpers/Libraries/imageUpload");
 
@@ -7,6 +8,8 @@ const { getAccessToRoute } = require("../Middlewares/Authorization/auth");
 
 
 const router = express.Router() ;
+
+router.use(cachePrivate);
 
 router.get("/profile",getAccessToRoute ,profile)
 

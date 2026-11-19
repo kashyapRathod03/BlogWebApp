@@ -5,12 +5,13 @@ import {
   formatArticleDate,
   getArticleExcerpt,
   getReadingTimeLabel,
+  getImageUrl,
 } from "../../utils/articleUtils";
 import "./ui.css";
 
 const BlogCard = ({ story }) => {
   const category = story.category || "Engineering Insights";
-  const imageSrc = story.image ? `/storyImages/${story.image}` : "/storyImages/default.jpg";
+  const imageSrc = getImageUrl(story.image);
 
   return (
     <article className="to-card to-card--interactive to-blog-card">

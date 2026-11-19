@@ -128,17 +128,17 @@ const getMyStories = asyncErrorWrapper(async (req, res, next) => {
     });
 });
 
-const detailStory =asyncErrorWrapper(async(req,res,next)=>{
+const detailStory = asyncErrorWrapper(async(req,res,next)=>{
 
     const {slug}=req.params ;
-    const {activeUser} =req.body 
+    const activeUser = req.body?.activeUser || req.user ;
 
-    // Increment views count atomically
-    const story = await Story.findOneAndUpdate(
-        { slug: slug },
-        { $inc: { views: 1 } },
-        { new: true }
-    ).populate("author likes");
+    // Non-blocking fire-and-forget view count increment
+    Story.updateOne({ slug: slug }, { $inc: { views: 1 } }).catch((err) => {
+        console.error("View count increment background error:", err.message);
+    });
+
+    const story = await Story.findOne({ slug: slug }).populate("author likes");
 
     if (!story) {
         return res.status(404).json({
@@ -149,7 +149,6 @@ const detailStory =asyncErrorWrapper(async(req,res,next)=>{
 
     const storyLikeUserIds = (story.likes || []).map(json => json._id ? json._id.toString() : (json.id || json))
     const likeStatus = activeUser && activeUser._id ? storyLikeUserIds.includes(activeUser._id.toString()) : false
-
 
     return res.status(200).
         json({

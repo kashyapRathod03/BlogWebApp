@@ -78,3 +78,20 @@ export const parseContentWithToc = (html = "") => {
     headings,
   };
 };
+
+export const getImageUrl = (image, fallback = "/storyImages/default.jpg") => {
+  if (!image) return fallback;
+  if (image.startsWith("http://") || image.startsWith("https://")) {
+    return image;
+  }
+  return `/storyImages/${image}`;
+};
+
+export const getUserPhotoUrl = (photo, fallback = "/userPhotos/user.png") => {
+  if (!photo) return fallback;
+  if (photo.startsWith("http://") || photo.startsWith("https://")) {
+    return photo;
+  }
+  return `/userPhotos/${photo}`;
+};
+
