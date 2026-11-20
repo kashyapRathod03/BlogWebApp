@@ -12,6 +12,7 @@ const {
   updateStoryStatus,
   deleteStory,
   editStoryPage,
+  getCategories,
 } = require("../Controllers/story");
 const {
   checkStoryExist,
@@ -21,8 +22,8 @@ const {
 const router = express.Router();
 
 // 1. Static Public Read Routes (Cached for CDN & Edge delivery)
-router.get("/getAllStories", cachePublic(60), getAllStories);
-router.get("/public/articles", cachePublic(60), getAllStories);
+router.get(["/getAllStories", "/articles", "/public/articles"], cachePublic(60), getAllStories);
+router.get(["/categories", "/public/categories"], cachePublic(300), getCategories);
 
 // 2. Static Private Author & Management Routes (Zero Cache Protection)
 router.post("/addstory", [getAccessToRoute, cachePrivate, imageupload.single("image")], addStory);
@@ -53,8 +54,7 @@ router.delete(
 );
 
 // 4. Parameterized Public Article Read Routes (MUST BE AT THE VERY BOTTOM to prevent shadowing static routes)
-router.get("/public/articles/:slug", [checkStoryExist, cachePublic(60)], detailStory);
-router.get("/:slug", [checkStoryExist, cachePublic(60)], detailStory);
-router.post("/:slug", checkStoryExist, detailStory);
+router.get(["/public/articles/:slug", "/articles/:slug", "/:slug"], [checkStoryExist, cachePublic(60)], detailStory);
+router.post(["/public/articles/:slug", "/articles/:slug", "/:slug"], checkStoryExist, detailStory);
 
 module.exports = router;

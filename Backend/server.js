@@ -69,8 +69,9 @@ app.get(["/api/health", "/health"], cacheNoStore, (req, res) => {
 // Mount API & Feature Routes
 app.use("/", IndexRoute);
 
-// Serve static uploaded assets from public/ (storyImages, userPhotos)
+// Serve static uploaded assets from public/ (storyImages, userPhotos, uploads)
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Express Static Serving & SPA Fallback for Hostinger Managed Node.js
 const candidateDistPaths = [
@@ -115,7 +116,8 @@ if (distDir) {
       req.path.startsWith("/user") ||
       req.path.startsWith("/comment") ||
       req.path.startsWith("/storyImages") ||
-      req.path.startsWith("/userPhotos")
+      req.path.startsWith("/userPhotos") ||
+      req.path.startsWith("/uploads")
     ) {
       return next();
     }

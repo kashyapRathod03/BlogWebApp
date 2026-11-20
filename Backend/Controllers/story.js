@@ -349,6 +349,30 @@ const deleteStory  =asyncErrorWrapper(async(req,res,next)=>{
 
 })
 
+const getCategories = asyncErrorWrapper(async (req, res, next) => {
+    const defaultCategories = [
+        "Engineering Insights",
+        "AI & Automation",
+        "Cloud & DevOps",
+        "Software Architecture",
+        "Web Development",
+        "Product Design",
+    ];
+
+    try {
+        const existing = await Story.distinct("category");
+        const combined = Array.from(new Set([...defaultCategories, ...(existing || []).filter(Boolean)]));
+        return res.status(200).json({
+            success: true,
+            data: combined,
+        });
+    } catch (e) {
+        return res.status(200).json({
+            success: true,
+            data: defaultCategories,
+        });
+    }
+});
 
 module.exports ={
     addStory,
@@ -359,5 +383,6 @@ module.exports ={
     editStoryPage,
     editStory ,
     updateStoryStatus,
-    deleteStory
+    deleteStory,
+    getCategories
 }

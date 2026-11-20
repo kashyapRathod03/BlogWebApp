@@ -1,4 +1,5 @@
 const express = require("express")
+const { cachePrivate } = require("../Middlewares/cache/cacheControl")
 
 const router = express.Router()
 
@@ -26,5 +27,13 @@ router.use("/api/user", userRoute)
 router.use("/api/comment", commentRoute)
 router.use("/api/contact", contactRoute)
 router.use("/api/newsletter", newsletterRoute)
+
+// Protected wallet and admin namespaces with strict zero-cache policy
+router.use("/api/wallet", cachePrivate, (req, res) => {
+  res.status(404).json({ success: false, message: "Wallet service unavailable" });
+});
+router.use("/api/admin", cachePrivate, (req, res) => {
+  res.status(404).json({ success: false, message: "Admin service unavailable" });
+});
 
 module.exports = router
