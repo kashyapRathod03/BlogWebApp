@@ -5,6 +5,7 @@ import {
   formatArticleDate,
   getArticleExcerpt,
   getReadingTimeLabel,
+  getImageUrl,
 } from "../../utils/articleUtils";
 
 const ReadListStoryItem = ({ story }) => {
@@ -51,7 +52,7 @@ const ReadListStoryItem = ({ story }) => {
       <div>
         <Link to={`/blog/${story.slug}`}>
           <img
-            src={`/storyImages/${story.image || "default.jpg"}`}
+            src={getImageUrl(story.image)}
             alt={story.title}
           />
         </Link>

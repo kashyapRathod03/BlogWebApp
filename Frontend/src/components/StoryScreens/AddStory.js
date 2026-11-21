@@ -29,6 +29,8 @@ const AddStory = () => {
 
     if (payload.imageFile) {
       formdata.append("image", payload.imageFile);
+    } else if (payload.image) {
+      formdata.append("image", payload.image);
     }
 
     try {

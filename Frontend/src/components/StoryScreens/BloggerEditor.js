@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import {
   FiArrowLeft,
@@ -51,6 +52,7 @@ const BloggerEditor = ({
       : new Date().toISOString().slice(0, 16)
   );
   const [imageFile, setImageFile] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(initialData.image || "");
   const [imagePreview, setImagePreview] = useState(
     initialData.image ? getImageUrl(initialData.image) : ""
   );
@@ -149,7 +151,7 @@ const BloggerEditor = ({
   };
 
   // Image Insertion
-  const handleImageFileChange = (e) => {
+  const handleImageFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
@@ -158,6 +160,24 @@ const BloggerEditor = ({
         setImagePreview(ev.target?.result);
       };
       reader.readAsDataURL(file);
+
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+        const token = localStorage.getItem("authToken");
+        const res = await axios.post("/api/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            ...(token ? { authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        if (res.data?.url) {
+          setUploadedImageUrl(res.data.url);
+          setImagePreview(getImageUrl(res.data.url));
+        }
+      } catch (uploadErr) {
+        console.warn("Direct upload notice, fallback to submission upload:", uploadErr.message);
+      }
     }
   };
 
@@ -215,6 +235,7 @@ const BloggerEditor = ({
       customSlug: permalinkType === "custom" ? customSlug.trim() : "",
       publishedAt: scheduleType === "custom" ? publishedAt : new Date().toISOString(),
       imageFile,
+      image: uploadedImageUrl || initialData.image || "",
     };
 
     onSave(payload);
@@ -734,6 +755,7 @@ const BloggerEditor = ({
                   onClick={() => {
                     setImageFile(null);
                     setImagePreview("");
+                    setUploadedImageUrl("");
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
                   style={{

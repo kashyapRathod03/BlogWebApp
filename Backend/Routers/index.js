@@ -9,6 +9,7 @@ const userRoute = require("./user")
 const commentRoute = require("./comment")
 const contactRoute = require("./contact")
 const newsletterRoute = require("./newsletter")
+const { uploadRouter } = require("./upload")
 
 // Standard root-level routes (preserved for existing client calls)
 router.use("/auth", authRoute)
@@ -17,6 +18,7 @@ router.use("/user", userRoute)
 router.use("/comment", commentRoute)
 router.use("/contact", contactRoute)
 router.use("/newsletter", newsletterRoute)
+router.use("/upload", uploadRouter)
 
 // Explicit /api namespace routes (supports /api/auth, /api/story, /api/articles, etc.)
 router.use("/api/auth", authRoute)
@@ -27,6 +29,7 @@ router.use("/api/user", userRoute)
 router.use("/api/comment", commentRoute)
 router.use("/api/contact", contactRoute)
 router.use("/api/newsletter", newsletterRoute)
+router.use("/api/upload", uploadRouter)
 
 // Protected wallet and admin namespaces with strict zero-cache policy
 router.use("/api/wallet", cachePrivate, (req, res) => {

@@ -1,5 +1,6 @@
 const express = require("express");
 const imageupload = require("../Helpers/Libraries/imageUpload");
+const { handleUpload } = require("./upload");
 const { cachePublic, cachePrivate } = require("../Middlewares/cache/cacheControl");
 const { getAccessToRoute } = require("../Middlewares/Authorization/auth");
 const {
@@ -26,6 +27,8 @@ router.get(["/getAllStories", "/articles", "/public/articles"], cachePublic(60),
 router.get(["/categories", "/public/categories"], cachePublic(300), getCategories);
 
 // 2. Static Private Author & Management Routes (Zero Cache Protection)
+router.post("/uploadImage", [cachePrivate], handleUpload);
+router.post("/upload", [cachePrivate], handleUpload);
 router.post("/addstory", [getAccessToRoute, cachePrivate, imageupload.single("image")], addStory);
 router.get("/myStories", [getAccessToRoute, cachePrivate], getMyStories);
 router.get("/articles/my", [getAccessToRoute, cachePrivate], getMyStories);

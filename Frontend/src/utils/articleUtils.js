@@ -79,19 +79,79 @@ export const parseContentWithToc = (html = "") => {
   };
 };
 
+export const getApiBase = () => {
+  if (typeof window === "undefined") return "";
+  if (import.meta.env && import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/$/, "");
+  }
+  if (
+    window.location &&
+    window.location.hostname === "localhost" &&
+    window.location.port === "5173"
+  ) {
+    return "http://localhost:5000";
+  }
+  return "";
+};
+
 export const getImageUrl = (image, fallback = "/storyImages/default.jpg") => {
   if (!image) return fallback;
-  if (image.startsWith("http://") || image.startsWith("https://")) {
+  if (
+    image.startsWith("http://") ||
+    image.startsWith("https://") ||
+    image.startsWith("data:") ||
+    image.startsWith("blob:")
+  ) {
     return image;
   }
-  return `/storyImages/${image}`;
+
+  const base = getApiBase();
+
+  if (image.startsWith("/uploads/")) {
+    return `${base}${image}`;
+  }
+  if (image.startsWith("uploads/")) {
+    return `${base}/${image}`;
+  }
+  if (image.startsWith("/storyImages/")) {
+    return `${base}${image}`;
+  }
+  if (image.startsWith("storyImages/")) {
+    return `${base}/${image}`;
+  }
+  if (image.startsWith("image_") || image === "default.jpg") {
+    return `${base}/storyImages/${image}`;
+  }
+
+  return `${base}/uploads/${image}`;
 };
 
 export const getUserPhotoUrl = (photo, fallback = "/userPhotos/user.png") => {
   if (!photo) return fallback;
-  if (photo.startsWith("http://") || photo.startsWith("https://")) {
+  if (
+    photo.startsWith("http://") ||
+    photo.startsWith("https://") ||
+    photo.startsWith("data:") ||
+    photo.startsWith("blob:")
+  ) {
     return photo;
   }
-  return `/userPhotos/${photo}`;
+
+  const base = getApiBase();
+
+  if (photo.startsWith("/uploads/")) {
+    return `${base}${photo}`;
+  }
+  if (photo.startsWith("uploads/")) {
+    return `${base}/${photo}`;
+  }
+  if (photo.startsWith("/userPhotos/")) {
+    return `${base}${photo}`;
+  }
+  if (photo.startsWith("userPhotos/")) {
+    return `${base}/${photo}`;
+  }
+
+  return `${base}/userPhotos/${photo}`;
 };
 

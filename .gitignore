@@ -14,10 +14,16 @@ build/
 Frontend/build/
 dist/
 Frontend/dist/
-Config/
 .env
 .env*.local
 *.env
+Config/config.env
+
+# uploads
+uploads/
+/uploads
+Backend/uploads/
+Backend/public/uploads/
 
 
 npm-debug.log*

@@ -33,7 +33,7 @@ const addStory = asyncErrorWrapper(async  (req,res,next)=> {
             customSlug: customSlug || "",
             publishedAt: publishedAt || (storyStatus === "published" ? Date.now() : null),
             author :req.user._id ,
-            image : req.savedStoryImage || "default.jpg",
+            image : req.savedStoryImage || req.body.image || "default.jpg",
             readtime
         })
 

@@ -23,6 +23,8 @@ for (const envPath of envPaths) {
   }
 }
 
+const { UPLOAD_DIR } = require("./Config/upload");
+
 connectDatabase();
 
 const app = express();
@@ -69,9 +71,9 @@ app.get(["/api/health", "/health"], cacheNoStore, (req, res) => {
 // Mount API & Feature Routes
 app.use("/", IndexRoute);
 
-// Serve static uploaded assets from public/ (storyImages, userPhotos, uploads)
+// Serve static uploaded assets from persistent UPLOAD_DIR and legacy public/
+app.use("/uploads", express.static(UPLOAD_DIR, { maxAge: "7d" }));
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Express Static Serving & SPA Fallback for Hostinger Managed Node.js
 const candidateDistPaths = [
@@ -138,4 +140,8 @@ const server = app.listen(PORT, () => {
 
 process.on("unhandledRejection", (err) => {
   console.error(`Logged Error : ${err}`);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error(`Uncaught Exception: ${err}`);
 });

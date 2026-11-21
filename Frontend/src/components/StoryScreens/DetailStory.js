@@ -255,7 +255,7 @@ const DetailStory = () => {
         "@type": "Article",
         headline: story.title,
         description: excerpt,
-        image: story.image ? (story.image.startsWith("http") ? story.image : `${window.location.origin}/storyImages/${story.image}`) : undefined,
+        image: story.image ? (story.image.startsWith("http") ? story.image : `${window.location.origin}${getImageUrl(story.image)}`) : undefined,
         datePublished: story.createdAt,
         dateModified: story.updatedAt || story.createdAt,
         author: story.author?.username
