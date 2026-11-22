@@ -30,7 +30,9 @@ connectDatabase();
 const app = express();
 
 // Security & Parsing
+app.disable("x-powered-by");
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Production CORS Configuration
 const allowedOrigins = [

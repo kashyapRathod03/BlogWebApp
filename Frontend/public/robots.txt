@@ -1,3 +1,11 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /my-blogs
+Disallow: /my-stories
+Disallow: /addstory
+Disallow: /profile
+Disallow: /edit_profile
+Disallow: /change_password
+Disallow: /readList
+
+Sitemap: https://techorcas.blog/sitemap.xml
