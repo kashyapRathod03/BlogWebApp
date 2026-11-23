@@ -9,12 +9,12 @@ const connectDatabase = require("./Helpers/database/connectDatabase");
 const customErrorHandler = require("./Middlewares/Errors/customErrorHandler");
 const { cacheNoStore } = require("./Middlewares/cache/cacheControl");
 
-// Load environment configuration from Backend/Config/config.env or .env
+// Load environment configuration (.env takes priority, with legacy Config/config.env fallback)
 const envPaths = [
+  path.resolve(__dirname, "../.env"),
+  path.resolve(__dirname, ".env"),
   path.resolve(__dirname, "Config/config.env"),
   path.resolve(__dirname, "../Config/config.env"),
-  path.resolve(__dirname, ".env"),
-  path.resolve(__dirname, "../.env"),
 ];
 
 for (const envPath of envPaths) {
@@ -36,6 +36,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Production CORS Configuration
 const allowedOrigins = [
+  "https://techorcas.com",
+  "https://www.techorcas.com",
   "https://techorcas.blog",
   "https://www.techorcas.blog",
   "https://techorcas.co",
@@ -45,7 +47,16 @@ const allowedOrigins = [
 ];
 
 if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ""));
+  const customFrontend = process.env.FRONTEND_URL.replace(/\/$/, "");
+  if (!allowedOrigins.includes(customFrontend)) {
+    allowedOrigins.push(customFrontend);
+  }
+  if (customFrontend.startsWith("https://") && !customFrontend.includes("www.")) {
+    const wwwFrontend = customFrontend.replace("https://", "https://www.");
+    if (!allowedOrigins.includes(wwwFrontend)) {
+      allowedOrigins.push(wwwFrontend);
+    }
+  }
 }
 
 app.use(

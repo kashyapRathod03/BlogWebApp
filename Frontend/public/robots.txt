@@ -8,4 +8,4 @@ Disallow: /edit_profile
 Disallow: /change_password
 Disallow: /readList
 
-Sitemap: https://techorcas.blog/sitemap.xml
+Sitemap: https://techorcas.com/sitemap.xml

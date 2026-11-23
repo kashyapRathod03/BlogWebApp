@@ -18,6 +18,7 @@ Frontend/dist/
 .env*.local
 *.env
 Config/config.env
+*.zip
 
 # uploads
 uploads/
