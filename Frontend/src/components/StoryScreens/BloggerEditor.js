@@ -23,6 +23,7 @@ import {
 } from "react-icons/fi";
 import { BLOG_CATEGORIES } from "../../data/siteData";
 import { formatArticleDate, getReadingTimeLabel, getImageUrl } from "../../utils/articleUtils";
+import OptimizedImage from "../common/OptimizedImage";
 import SEOHead from "../UI/SEOHead";
 import "../../Css/BloggerEditor.css";
 
@@ -745,9 +746,10 @@ const BloggerEditor = ({
             />
             {imagePreview ? (
               <div style={{ position: "relative", marginBottom: 10 }}>
-                <img
+                <OptimizedImage
                   src={imagePreview}
                   alt="Cover Preview"
+                  variant="preview"
                   style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8 }}
                 />
                 <button
@@ -965,9 +967,10 @@ const BloggerEditor = ({
 
               {imagePreview && (
                 <div style={{ marginBottom: 28, borderRadius: 12, overflow: "hidden" }}>
-                  <img
+                  <OptimizedImage
                     src={imagePreview}
                     alt={title}
+                    variant="preview"
                     style={{ width: "100%", maxHeight: 380, objectFit: "cover" }}
                   />
                 </div>

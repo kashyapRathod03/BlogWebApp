@@ -84,8 +84,10 @@ app.get(["/api/health", "/health"], cacheNoStore, (req, res) => {
 // Mount API & Feature Routes
 app.use("/", IndexRoute);
 
-// Serve static uploaded assets from persistent UPLOAD_DIR and legacy public/
-app.use("/uploads", express.static(UPLOAD_DIR, { maxAge: "7d" }));
+// Graceful fallback for legacy uploaded assets if directory exists
+if (UPLOAD_DIR && fs.existsSync(UPLOAD_DIR)) {
+  app.use("/uploads", express.static(UPLOAD_DIR, { maxAge: "7d" }));
+}
 app.use(express.static(path.join(__dirname, "public")));
 
 // Express Static Serving & SPA Fallback for Hostinger Managed Node.js

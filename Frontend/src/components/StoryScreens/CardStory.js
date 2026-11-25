@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../../utils/articleUtils';
+import OptimizedImage from '../common/OptimizedImage';
 
 const Story = ({ story }) => {
 
@@ -27,7 +28,7 @@ const Story = ({ story }) => {
         <div className="story-card">
             <Link to={`/story/${story.slug}`} className="story-link">
 
-                <img className=" story-image" src={getImageUrl(story.image)} alt={story.title} />
+                <OptimizedImage className=" story-image" src={getImageUrl(story.image)} alt={story.title} variant="preview" loading="lazy" />
                 <div className="story-content-wrapper">
 
                     <h5 className="story-title">

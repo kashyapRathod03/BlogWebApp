@@ -31,6 +31,7 @@ import BlogCard from "../UI/BlogCard";
 import LoadingState from "../UI/LoadingState";
 import SEOHead from "../UI/SEOHead";
 import CommentSidebar from "../CommentScreens/CommentSidebar";
+import OptimizedImage from "../common/OptimizedImage";
 import "../../Css/DetailStory.css";
 import "../../Css/Pages.css";
 
@@ -438,10 +439,13 @@ const DetailStory = () => {
             )}
 
             {story.image && (
-              <img
+              <OptimizedImage
                 className="to-article-hero-img"
                 src={getImageUrl(story.image)}
                 alt={story.title}
+                variant="full"
+                fetchpriority="high"
+                loading="eager"
               />
             )}
 

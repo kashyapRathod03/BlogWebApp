@@ -7,6 +7,7 @@ import {
   getReadingTimeLabel,
   getImageUrl,
 } from "../../utils/articleUtils";
+import OptimizedImage from "../common/OptimizedImage";
 
 const ReadListStoryItem = ({ story }) => {
   if (!story) return null;
@@ -51,9 +52,11 @@ const ReadListStoryItem = ({ story }) => {
 
       <div>
         <Link to={`/blog/${story.slug}`}>
-          <img
+          <OptimizedImage
             src={getImageUrl(story.image)}
             alt={story.title}
+            variant="preview"
+            loading="lazy"
           />
         </Link>
       </div>

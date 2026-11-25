@@ -1,25 +1,36 @@
 const path = require("path");
 const fs = require("fs");
+const { deleteFromCloudinary } = require("./cloudinaryUpload");
 const { UPLOAD_DIR } = require("../../Config/upload");
 
 const deleteImageFile = (req, deleteImage) => {
-  if (!deleteImage || deleteImage === "default.jpg" || deleteImage === "user.png") return;
+  const targetImage = deleteImage || req?.savedStoryImage || req?.body?.image;
+  if (!targetImage || targetImage === "default.jpg" || targetImage === "user.png") return;
 
-  // Extract base filename whether provided as "/uploads/filename.png", "uploads/filename.png", or bare "filename.png"
-  const cleanFilename = path.basename(deleteImage);
+  // 1. Cloudinary URL or public_id cleanup
+  if (typeof targetImage === "string" && targetImage.includes("cloudinary.com")) {
+    deleteFromCloudinary(targetImage).catch((err) => {
+      console.warn("Cloudinary delete notice:", err.message);
+    });
+    return;
+  }
 
-  // 1. Check in persistent UPLOAD_DIR
-  const uploadPath = path.join(UPLOAD_DIR, cleanFilename);
-  if (fs.existsSync(uploadPath)) {
-    try {
-      fs.unlinkSync(uploadPath);
-      return;
-    } catch (err) {
-      console.warn("UPLOAD_DIR unlink error:", err.message);
+  // 2. Legacy local disk fallback if file exists in persistent UPLOAD_DIR
+  const cleanFilename = path.basename(targetImage);
+
+  if (UPLOAD_DIR) {
+    const uploadPath = path.join(UPLOAD_DIR, cleanFilename);
+    if (fs.existsSync(uploadPath)) {
+      try {
+        fs.unlinkSync(uploadPath);
+        return;
+      } catch (err) {
+        console.warn("UPLOAD_DIR unlink error:", err.message);
+      }
     }
   }
 
-  // 2. Check in legacy public/storyImages
+  // 3. Legacy public/storyImages directory
   const rootDir = path.resolve(__dirname, "../../");
   const storyImgPath = path.join(rootDir, "public/storyImages", cleanFilename);
   if (fs.existsSync(storyImgPath)) {
@@ -31,11 +42,12 @@ const deleteImageFile = (req, deleteImage) => {
     }
   }
 
-  // 3. Check in legacy public/userPhotos
+  // 4. Legacy public/userPhotos directory
   const userPhotoPath = path.join(rootDir, "public/userPhotos", cleanFilename);
   if (fs.existsSync(userPhotoPath)) {
     try {
       fs.unlinkSync(userPhotoPath);
+      return;
     } catch (err) {
       console.warn("userPhotos unlink error:", err.message);
     }

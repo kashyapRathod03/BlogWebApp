@@ -7,6 +7,7 @@ import {
   getReadingTimeLabel,
   getImageUrl,
 } from "../../utils/articleUtils";
+import OptimizedImage from "../common/OptimizedImage";
 import Button from "./Button";
 import "./ui.css";
 
@@ -18,7 +19,7 @@ const FeaturedArticle = ({ story }) => {
   return (
     <article className="to-card to-featured-article">
       <Link to={`/blog/${story.slug}`} className="to-featured-article__media">
-        <img src={imageSrc} alt={story.title} />
+        <OptimizedImage src={imageSrc} alt={story.title} variant="preview" />
       </Link>
 
       <div className="to-featured-article__body">

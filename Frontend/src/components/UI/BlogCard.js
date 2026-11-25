@@ -7,6 +7,7 @@ import {
   getReadingTimeLabel,
   getImageUrl,
 } from "../../utils/articleUtils";
+import OptimizedImage from "../common/OptimizedImage";
 import "./ui.css";
 
 const BlogCard = ({ story }) => {
@@ -16,7 +17,7 @@ const BlogCard = ({ story }) => {
   return (
     <article className="to-card to-card--interactive to-blog-card">
       <Link to={`/blog/${story.slug}`} className="to-blog-card__media">
-        <img src={imageSrc} alt={story.title} loading="lazy" />
+        <OptimizedImage src={imageSrc} alt={story.title} variant="preview" loading="lazy" />
       </Link>
 
       <div className="to-blog-card__body">

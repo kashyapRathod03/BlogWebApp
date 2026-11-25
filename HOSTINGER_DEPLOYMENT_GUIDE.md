@@ -21,7 +21,9 @@ Add these key-value pairs either in the **Hostinger hPanel Node.js Environment V
 | `JWT_SECRET` | `0f9a8a4ebd9df9cca86f60abdefb8f79c3fddcea975afcb327464c56e5341576` | Matching JWT validation secret |
 | `JWT_EXPIRE` | `60m` | User authentication session duration |
 | `RESET_PASSWORD_EXPIRE` | `3600000` | Password reset token expiration (1 hour in milliseconds) |
-| `UPLOAD_DIR` | `./uploads` | Persistent directory for article & user images (or absolute Hostinger path) |
+| `CLOUDINARY_CLOUD_NAME` | `dtecxhy4m` | Cloudinary Cloud Name for permanent media storage |
+| `CLOUDINARY_API_KEY` | `542779693214658` | Cloudinary API Key |
+| `CLOUDINARY_API_SECRET` | `YoRPCkK9RAsc9YxfOFoaBQxzUjI` | Cloudinary API Secret |
 | `SMTP_HOST` | `smtp.gmail.com` *(or `smtp.titan.email`)* | Outgoing mail server for password recovery emails |
 | `SMTP_PORT` | `587` *(or `465` for SSL)* | SMTP port |
 | `EMAIL_USERNAME` | `partners@techorcas.com` | Mail sender username |

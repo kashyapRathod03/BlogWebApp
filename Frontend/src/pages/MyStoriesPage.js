@@ -16,6 +16,7 @@ import {
 } from "react-icons/fi";
 import { AuthContext } from "../Context/AuthContext";
 import { formatArticleDate, getImageUrl } from "../utils/articleUtils";
+import OptimizedImage from "../components/common/OptimizedImage";
 import PageHero from "../components/UI/PageHero";
 import LoadingState from "../components/UI/LoadingState";
 import EmptyState from "../components/UI/EmptyState";
@@ -316,15 +317,11 @@ const MyStoriesPage = () => {
                               background: "var(--bg-secondary)",
                             }}
                           >
-                            <img
+                            <OptimizedImage
                               src={getImageUrl(story.image)}
                               alt={story.title}
+                              variant="preview"
                               style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src =
-                                  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=300&q=80";
-                              }}
                             />
                           </div>
                         </td>
