@@ -64,7 +64,7 @@ const ContactForm = ({ defaultService = "" }) => {
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "We could not submit your inquiry right now. Please try again or email info@techorcas.com."
+          "We could not submit your inquiry right now. Please try again or email partners@techorcas.com."
       );
     } finally {
       setLoading(false);

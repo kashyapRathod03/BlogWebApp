@@ -36,7 +36,7 @@ const Footer = () => (
               <FiGithub size={17} />
             </a>
             <a
-              href="mailto:info@techorcas.com"
+              href="mailto:partners@techorcas.com"
               className="to-footer__social-btn"
               aria-label="Email TechOrcas"
             >
@@ -70,7 +70,7 @@ const Footer = () => (
         <div>
           <h4 className="to-footer__heading">Contact</h4>
           <ul className="to-footer__list">
-            <li><a href="mailto:info@techorcas.com">info@techorcas.com</a></li>
+            <li><a href="mailto:partners@techorcas.com">partners@techorcas.com</a></li>
             <li><Link to="/contact">Contact Page</Link></li>
             <li>
               <a href="https://www.linkedin.com" target="_blank" rel="noreferrer">

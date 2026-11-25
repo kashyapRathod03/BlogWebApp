@@ -45,7 +45,7 @@ const LegalPage = ({ type = "privacy" }) => {
                 <h2>Contact</h2>
                 <p>
                   For data inquiries or deletion requests, reach out to{" "}
-                  <a href="mailto:info@techorcas.com">info@techorcas.com</a>.
+                  <a href="mailto:partners@techorcas.com">partners@techorcas.com</a>.
                 </p>
               </>
             ) : (
@@ -65,7 +65,7 @@ const LegalPage = ({ type = "privacy" }) => {
                 <h2>Contact</h2>
                 <p>
                   Questions regarding these terms may be sent to{" "}
-                  <a href="mailto:info@techorcas.com">info@techorcas.com</a>.
+                  <a href="mailto:partners@techorcas.com">partners@techorcas.com</a>.
                 </p>
               </>
             )}

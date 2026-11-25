@@ -31,7 +31,7 @@ const ContactPage = () => (
 
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <a
-                href="mailto:info@techorcas.com"
+                href="mailto:partners@techorcas.com"
                 style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--text-primary)" }}
               >
                 <span className="to-icon-box" style={{ marginBottom: 0, width: 40, height: 40 }}>
@@ -41,7 +41,7 @@ const ContactPage = () => (
                   <span style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)" }}>
                     Email
                   </span>
-                  <strong>info@techorcas.com</strong>
+                  <strong>partners@techorcas.com</strong>
                 </div>
               </a>
 

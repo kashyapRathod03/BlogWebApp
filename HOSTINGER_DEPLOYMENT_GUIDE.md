@@ -24,7 +24,7 @@ Add these key-value pairs either in the **Hostinger hPanel Node.js Environment V
 | `UPLOAD_DIR` | `./uploads` | Persistent directory for article & user images (or absolute Hostinger path) |
 | `SMTP_HOST` | `smtp.gmail.com` *(or `smtp.titan.email`)* | Outgoing mail server for password recovery emails |
 | `SMTP_PORT` | `587` *(or `465` for SSL)* | SMTP port |
-| `EMAIL_USERNAME` | `info@techorcas.com` | Mail sender username |
+| `EMAIL_USERNAME` | `partners@techorcas.com` | Mail sender username |
 | `EMAIL_PASS` | `your_email_app_password` | App password (for Gmail 2FA) or Hostinger Titan password |
 
 > [!NOTE]
