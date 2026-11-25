@@ -4,7 +4,7 @@
   "description": "TechOrcas Publishing Platform - Unified Hostinger & Split Render/Static deployment",
   "main": "server.js",
   "scripts": {
-    "build": "cd Frontend && npm install && npm run build",
+    "build": "cd Frontend && npm install --include=dev && npm run build",
     "start": "node server.js",
     "server": "cd Backend && npm start",
     "client": "cd Frontend && npm run dev",
